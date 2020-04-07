@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>浏览器的事件循环宏任务和微任务</title>
+</head>
+<body>
+  <script>
+    // "sett里的p"名字表达
+    setTimeout(
+      Promise.resolve().then(()=> console.log('settimeout里面多promise.resolve'))
+    ,0)
+    // "p里的sett"名字表达
+    Promise.resolve().then(() => {
+      setTimeout(console.log('promise.resolve里面多setTimeout'))
+    }) 
+    console.log('main')
+    // 执行顺序： main , settimeout里面多promise.resolve , promise.resolve里面多setTimeout
+    // 解释：第一轮 （sett里的p）放到i/o里，再 （p里的sett）放到微任务里， 再执行main =》main
+    // 第二轮：执行微任务，看到（p里的sett）里面有setT所以将('promise.resolve里面多setTimeout')放到i/o，此时i/o里有两个里：（sett里的p）和('promise.resolve里面多setTimeout')
+    // 第三轮执行i/o，先执行之前最早的（settimeout里面多promise.resolve）再执行（sett里的p）
+  </script>
+</body>
+</html>
